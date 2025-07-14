@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+<header th:replace="fragments/cabecalho :: header"></header>
+
+<div class="container mt-5">
+    <h2 th:text="${conta.id == null} ? 'Nova Conta' : 'Editar Conta'"></h2>
+    <form th:action="@{/contas/save}" th:object="${conta}" method="post">
+        <input type="hidden" th:field="*{id}"/>
+        
+        <div class="mb-3">
+            <label class="form-label">Descrição</label>
+            <input type="text" class="form-control" th:field="*{descricao}" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Tipo</label>
+            <select class="form-control" th:field="*{tipo}">
+                <option th:value="CORRENTE">Conta Corrente</option>
+                <option th:value="CARTAO">Cartão de Crédito</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Dia de Fechamento</label>
+            <input type="number" class="form-control" th:field="*{diaFechamento}" placeholder="Somente para cartão">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a th:href="@{/contas}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,91 @@
+.logo-bar {
+    background-color: #a78bfa;
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+}
+
+.logo-content {
+    display: flex;
+    align-items: center;
+}
+
+.logo-img {
+    height: 48px; 
+    width: auto;
+    margin-right: 12px;
+}
+
+.logo-text {
+    font-family: 'Fugaz One', cursive;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #4c1d95;
+}
+
+/*
+.logo-login {
+    height: 48px;
+    width: auto;
+    margin-bottom: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }*/
+
+.conteudo {
+    margin-top: 40px;
+}
+
+.menu-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f3e8ff;
+}
+
+.menu-links a {
+    margin-right: 15px;
+    text-decoration: none;
+    color: #4c1d95;
+    transition: color 0.2s ease, font-weight 0.2s ease;
+}
+
+.menu-links a:hover {
+    color: #7c3aed;
+    font-weight: bold;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logout-button {
+    padding: 5px 10px;
+    background-color: #c4b5fd;
+    border: none;
+    color: #4c1d95;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.logout-button:hover {
+    background-color: #a78bfa;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.card {
+    margin-top: 30px;
+}
+
+
+
