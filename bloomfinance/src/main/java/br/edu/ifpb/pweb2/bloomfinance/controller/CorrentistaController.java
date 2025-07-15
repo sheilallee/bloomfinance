@@ -40,12 +40,29 @@ public class CorrentistaController {
     @PostMapping("/salvar")
     public String salvar(@Valid @ModelAttribute Correntista correntista, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("titulo", "Novo Correntista");
+            model.addAttribute("titulo", correntista.getId() == null ? "Novo Correntista" : "Editar Correntista");
             return "correntistas/form";
         }
 
-        correntista.setSenha(PasswordUtil.hashPassword(correntista.getSenha()));
-        correntistaService.save(correntista);
+        if (correntista.getId() != null) {
+            
+            Correntista existente = correntistaService.findById(correntista.getId()).orElseThrow();
+
+            existente.setNome(correntista.getNome());
+            existente.setEmail(correntista.getEmail());
+            existente.setAdmin(correntista.isAdmin());
+            existente.setBloqueado(correntista.isBloqueado());
+
+            if (correntista.getSenha() != null && !correntista.getSenha().isEmpty()) {
+                existente.setSenha(PasswordUtil.hashPassword(correntista.getSenha()));
+            }
+
+            correntistaService.save(existente);
+        } else {
+            correntista.setSenha(PasswordUtil.hashPassword(correntista.getSenha()));
+            correntistaService.save(correntista);
+        }
+
         return "redirect:/correntistas";
     }
 

@@ -7,29 +7,38 @@
     <div th:replace="fragments/cabecalho :: cabecalho"></div>
 
     <div class="container conteudo">
-        <div class="card">
-            <div class="card-header">BloomFinance</div>
+        <div class="card shadow">
+            <div class="card-header bg-light text-dark">
+                <h4>BloomFinance</h4>
+            </div>
             <div class="card-body">
-                <p>Bem-vindo ao BloomFinance, sua plataforma de controle financeiro inteligente.</p>
-                <p>Como administrador, você poderá:
+                <p>Bem-vindo ao <strong>BloomFinance</strong>, sua plataforma de controle financeiro inteligente.</p>
+
+                <!-- Administrador -->
+                <div class="mb-3" th:if="${session.usuario != null and session.usuario.admin}">
+                    <p><strong>Como administrador, você poderá:</strong></p>
                     <ul>
-                        <li>Adicionar ou consultar correntistas</li>
-                        <li>Adicionar ou consultar contas</li>
+                        <li>Adicionar ou consultar correntistas cadastrados usando o menu <strong>Correntistas</strong></li>
+                        <li>Adicionar ou consultar categorias no menu <strong>Categorias</strong></li>
+                        <li>Adicionar ou consultar contas usando o menu <strong>Minhas Contas</strong></li>
+                        <li>Acessar transações, extrato e orçamento como correntista também</li>
                     </ul>
-                </p>
-                <p>Como correntista, você poderá:
+                </div>
+
+                <!-- Correntista -->
+                <div th:if="${session.usuario != null and !session.usuario.admin}">
+                    <p><strong>Como correntista, você poderá:</strong></p>
                     <ul>
-                        <li>Realizar transações</li>
-                        <li>Visualizar extratos</li>
-                        <li>Gerenciar orçamento</li>
+                        <li>Realizar <strong>transações</strong></li>
+                        <li>Visualizar <strong>extratos</strong> da conta</li>
+                        <li>Acompanhar seu <strong>orçamento anual</strong></li>
                     </ul>
-                </p>
+                </div>
             </div>
         </div>
     </div>
 </body>
 
 </html>
-
 
 

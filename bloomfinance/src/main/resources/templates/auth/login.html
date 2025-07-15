@@ -20,8 +20,7 @@
   <form class="form-signin" th:action="@{/auth}" method="POST" th:object="${usuario}">
     <div class="centered">
       <img class="mb-4 logo-login" th:src="@{/imagens/logo.jpg}" alt="Logo BloomFinance" />
-      <!--<img class="logo-login" th:src="@{/imagens/logo.jpg}" alt="Logo BloomFinance" />-->
-
+      
       <h1 class="h3 mb-3 font-weight-normal autentique">Por favor, autentique-se</h1>
 
       <div th:if="${not #strings.isEmpty(mensagem)}"
