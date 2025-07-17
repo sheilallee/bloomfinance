@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+  <div th:replace="fragments/cabecalho :: cabecalho"></div>
+
+  <div class="container conteudo">
+    <div class="card shadow">
+      <div class="card-header bg-light">
+        <h4 th:text="${titulo}">Categorias</h4>
+      </div>
+      <div class="card-body">
+        <table class="table table-striped table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Natureza</th>
+              <th>Ordem</th>
+              <th>Ativa</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="cat : ${categorias}">
+              <td th:text="${cat.id}">1</td>
+              <td th:text="${cat.nome}">Salário</td>
+              <td th:text="${cat.natureza}">ENTRADA</td>
+              <td th:text="${cat.ordem}">1</td>
+              <td>
+                <i class="bi bi-check-circle-fill text-success" th:if="${cat.ativa}"></i>
+                <i class="bi bi-x-circle-fill text-danger" th:unless="${cat.ativa}"></i>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <span th:text="'Página ' + ${currentPage + 1} + ' de ' + ${totalPages}"></span>
+          <div>
+            <a th:if="${currentPage > 0}" 
+              th:href="@{/categorias(page=${currentPage - 1}, size=5)}" 
+              class="btn btn-outline-secondary btn-sm">Anterior</a>
+
+            <a th:if="${currentPage + 1 < totalPages}" 
+              th:href="@{/categorias(page=${currentPage + 1}, size=5)}" 
+              class="btn btn-outline-secondary btn-sm">Próxima</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

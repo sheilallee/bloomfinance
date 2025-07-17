@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import br.edu.ifpb.pweb2.bloomfinance.model.Categoria;
 import br.edu.ifpb.pweb2.bloomfinance.repository.CategoriaRepository;
@@ -35,4 +37,9 @@ public class CategoriaService {
     public void deleteById(Long id) {
         categoriaRepository.deleteById(id);
     }
+
+    public Page<Categoria> findPaginado(Pageable pageable) {
+        return categoriaRepository.findByAtivaTrue(pageable);
+    }
+
 }
