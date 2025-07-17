@@ -30,7 +30,6 @@ public class Correntista implements Serializable {
     @Email(message = "Informe um e-mail válido.")
     private String email;
 
-    /*@NotBlank(message = "A senha é obrigatória.")*/
     private String senha;
 
     private boolean admin;

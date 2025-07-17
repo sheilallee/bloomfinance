@@ -22,7 +22,7 @@ public class InterceptorConfiguration implements WebMvcConfigurer {
                     "/auth/**",
                     "/css/**",
                     "/js/**",
-                    "/img/**",
+                    "/imagens/**",
                     "/favicon.ico",
                     "/"
                 );

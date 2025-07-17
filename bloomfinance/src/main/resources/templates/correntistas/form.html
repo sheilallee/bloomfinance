@@ -36,13 +36,22 @@
 
           <div class="mb-3">
             <label class="form-label">Senha:</label>
+
             <input type="password"
-                   th:field="*{senha}"
-                   class="form-control"
-                   placeholder="Informe uma nova senha"
-                   th:classappend="${#fields.hasErrors('senha')} ? 'is-invalid'"
-                   th:attr="readonly=${correntista.id != null} ? 'readonly' : null">
-            <!--<div class="invalid-feedback" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></div>-->
+                  th:if="${correntista.id == null}"
+                  th:field="*{senha}"
+                  class="form-control"
+                  placeholder="Informe uma senha"
+                  th:classappend="${#fields.hasErrors('senha')} ? 'is-invalid'">
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></div>
+
+            <input type="password"
+                  th:if="${correntista.id != null}"
+                  class="form-control"
+                  value="********"
+                  disabled
+                  placeholder="Senha oculta">
+
           </div>
 
           <div class="form-check mb-2">

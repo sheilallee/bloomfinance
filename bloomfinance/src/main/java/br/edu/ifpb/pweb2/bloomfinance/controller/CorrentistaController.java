@@ -60,21 +60,25 @@ public class CorrentistaController {
 
     @PostMapping("/salvar")
     public String salvar(@Valid @ModelAttribute Correntista correntista, BindingResult result, Model model) {
+        boolean novo = (correntista.getId() == null);
+
+        if (novo && (correntista.getSenha() == null || correntista.getSenha().isBlank())) {
+            result.rejectValue("senha", "senha.obrigatoria", "A senha é obrigatória.");
+        }
+
         if (result.hasErrors()) {
-            model.addAttribute("titulo", correntista.getId() == null ? "Novo Correntista" : "Editar Correntista");
+            model.addAttribute("titulo", novo ? "Cadastro de Correntista" : "Editar Correntista");
             return "correntistas/form";
         }
 
-        if (correntista.getId() != null) {
-            
+        if (!novo) {
             Correntista existente = correntistaService.findById(correntista.getId()).orElseThrow();
-
             existente.setNome(correntista.getNome());
             existente.setEmail(correntista.getEmail());
             existente.setAdmin(correntista.isAdmin());
             existente.setBloqueado(correntista.isBloqueado());
 
-            if (correntista.getSenha() != null && !correntista.getSenha().isEmpty()) {
+            if (correntista.getSenha() != null && !correntista.getSenha().isBlank()) {
                 existente.setSenha(PasswordUtil.hashPassword(correntista.getSenha()));
             }
 
