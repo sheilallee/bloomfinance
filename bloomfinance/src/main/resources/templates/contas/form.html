@@ -2,11 +2,11 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/head :: head"></head>
 <body>
-<header th:replace="fragments/cabecalho :: header"></header>
+<header th:replace="fragments/cabecalho :: cabecalho"></header>
 
 <div class="container mt-5">
     <h2 th:text="${conta.id == null} ? 'Nova Conta' : 'Editar Conta'"></h2>
-    <form th:action="@{/contas/save}" th:object="${conta}" method="post">
+    <form th:action="@{/contas/salvar}" th:object="${conta}" method="post">
         <input type="hidden" th:field="*{id}"/>
         
         <div class="mb-3">

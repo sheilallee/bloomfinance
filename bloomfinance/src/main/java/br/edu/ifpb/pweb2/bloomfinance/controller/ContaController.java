@@ -2,6 +2,9 @@ package br.edu.ifpb.pweb2.bloomfinance.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import br.edu.ifpb.pweb2.bloomfinance.model.Conta;
 import br.edu.ifpb.pweb2.bloomfinance.model.Correntista;
@@ -22,6 +26,25 @@ public class ContaController {
     @Autowired
     private ContaService contaService;
 
+    @GetMapping
+    public String listar(HttpSession session, Model model,
+                        @RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "5") int size) {
+
+        Correntista usuario = (Correntista) session.getAttribute("usuario");
+        if (usuario == null) {
+            return "redirect:/auth";
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Conta> contasPage = contaService.findByCorrentistaId(usuario.getId(), pageable);
+
+        model.addAttribute("titulo", "Minhas Contas");
+        model.addAttribute("contas", contasPage);
+
+        return "contas/list";
+    }
+
     /*@GetMapping
     public String listar(HttpSession session, Model model) {
         Correntista usuario = (Correntista) session.getAttribute("usuario");
@@ -29,7 +52,7 @@ public class ContaController {
         model.addAttribute("contas", contaService.findByCorrentistaId(usuario.getId().longValue()));
         return "contas/list";
     }*/
-    @GetMapping
+    /*@GetMapping
     public String listar(HttpSession session, Model model) {
         Correntista usuario = (Correntista) session.getAttribute("usuario");
         if (usuario == null) {
@@ -39,12 +62,12 @@ public class ContaController {
         model.addAttribute("titulo", "Minhas Contas");
         model.addAttribute("contas", contaService.findByCorrentistaId(usuario.getId()));
         return "contas/list";
-    }
+    }*/
 
     @GetMapping("/form")
     public String form(Model model) {
         model.addAttribute("conta", new Conta());
-        model.addAttribute("titulo", "Nova Conta");
+        //model.addAttribute("titulo", "Nova Conta");
         return "contas/form";
     }
 
@@ -69,6 +92,7 @@ public class ContaController {
         contaService.deleteById(id);
         return "redirect:/contas";
     }
+
 }
 
 

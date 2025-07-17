@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.edu.ifpb.pweb2.bloomfinance.model.Conta;
@@ -21,8 +23,14 @@ public class ContaService {
     @Autowired
     private CorrentistaService correntistaService;
 
-    public List<Conta> findByCorrentistaId(Long id) {
-        return contaRepository.findByCorrentistaId(id);
+    //para paginação
+    public Page<Conta> findByCorrentistaId(Long correntistaId, Pageable pageable) {
+    return contaRepository.findByCorrentistaId(correntistaId, pageable);
+    }
+
+    //para casos sem paginação (ex: TransacaoController)
+    public List<Conta> findByCorrentistaId(Long correntistaId) {
+    return contaRepository.findByCorrentistaId(correntistaId, Pageable.unpaged()).getContent();
     }
 
     public List<Conta> findAll() {
@@ -33,9 +41,10 @@ public class ContaService {
         return contaRepository.findById(id);
     }
 
-   // public Conta save(Conta conta) {
-   //     return contaRepository.save(conta);
-    //}
+    // public Conta save(Conta conta) {
+    //     return contaRepository.save(conta);
+        //}
+    
     public Conta save(Conta conta) {
         Correntista correntista = correntistaService
             .findById(conta.getCorrentista().getId())
