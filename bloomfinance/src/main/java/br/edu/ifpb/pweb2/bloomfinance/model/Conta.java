@@ -37,8 +37,6 @@ public class Conta implements Serializable {
 
     private Integer diaFechamento;
 
-    private BigDecimal saldo = BigDecimal.ZERO;
-
     @ManyToOne
     @JoinColumn(name = "correntista_id")
     private Correntista correntista;

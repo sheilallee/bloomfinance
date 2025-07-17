@@ -45,6 +45,17 @@
             </tr>
           </tbody>
         </table>
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <span th:text="'Página ' + ${correntistas.number + 1} + ' de ' + ${correntistas.totalPages}"></span>
+          <div>
+            <a th:if="${correntistas.hasPrevious()}" 
+              th:href="@{/correntistas(page=${correntistas.number - 1}, size=${correntistas.size})}" 
+              class="btn btn-outline-secondary btn-sm">Anterior</a>
+            <a th:if="${correntistas.hasNext()}" 
+              th:href="@{/correntistas(page=${correntistas.number + 1}, size=${correntistas.size})}" 
+              class="btn btn-outline-secondary btn-sm">Próxima</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>

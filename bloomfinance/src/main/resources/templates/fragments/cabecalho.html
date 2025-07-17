@@ -19,11 +19,18 @@
       <a class="nav-item nav-link" th:href="@{/categorias}" 
          th:if="${session.usuario != null and session.usuario.admin}">Categorias</a>
 
-      <!-- Visível para todos os usuários -->
-      <a class="nav-item nav-link" th:href="@{/contas}">Minhas Contas</a>
-      <a class="nav-item nav-link" th:href="@{/transacoes}">Transações</a>
-      <a class="nav-item nav-link" th:href="@{/extrato}">Extrato</a>
-      <a class="nav-item nav-link" th:href="@{/orcamento}">Orçamento</a>
+      <!-- Visível apenas para correntistas -->
+      <a class="nav-item nav-link" th:href="@{/contas}" 
+         th:if="${session.usuario != null and not session.usuario.admin}">Minhas Contas</a>
+
+      <a class="nav-item nav-link" th:href="@{/transacoes}" 
+         th:if="${session.usuario != null and not session.usuario.admin}">Transações</a>
+
+      <a class="nav-item nav-link" th:href="@{/extrato}" 
+         th:if="${session.usuario != null and not session.usuario.admin}">Extrato</a>
+
+      <a class="nav-item nav-link" th:href="@{/orcamento}" 
+         th:if="${session.usuario != null and not session.usuario.admin}">Orçamento</a>
     </div>
 
     <!-- Informações do usuário -->

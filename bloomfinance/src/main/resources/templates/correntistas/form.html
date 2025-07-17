@@ -16,24 +16,38 @@
 
           <div class="mb-3">
             <label class="form-label">Nome:</label>
-            <input type="text" class="form-control" th:field="*{nome}" 
+            <input type="text"
+                   th:field="*{nome}"
+                   class="form-control"
+                   th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid'"
                    th:attr="readonly=${correntista.id != null} ? 'readonly' : null">
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></div>
           </div>
 
           <div class="mb-3">
             <label class="form-label">Email:</label>
-            <input type="email" class="form-control" th:field="*{email}" 
+            <input type="email"
+                   th:field="*{email}"
+                   class="form-control"
+                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
                    th:attr="readonly=${correntista.id != null} ? 'readonly' : null">
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
           </div>
 
           <div class="mb-3">
             <label class="form-label">Senha:</label>
-            <input type="password" class="form-control" th:field="*{senha}" placeholder="Informe uma nova senha"
+            <input type="password"
+                   th:field="*{senha}"
+                   class="form-control"
+                   placeholder="Informe uma nova senha"
+                   th:classappend="${#fields.hasErrors('senha')} ? 'is-invalid'"
                    th:attr="readonly=${correntista.id != null} ? 'readonly' : null">
+            <!--<div class="invalid-feedback" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></div>-->
           </div>
 
           <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" th:field="*{admin}" 
+            <input class="form-check-input" type="checkbox"
+                   th:field="*{admin}"
                    th:attr="disabled=${correntista.id != null}">
             <label class="form-check-label">Administrador?</label>
           </div>
@@ -47,9 +61,13 @@
             <button type="submit" class="btn btn-primary">Salvar</button>
             <a class="btn btn-secondary" th:href="@{/correntistas}">Cancelar</a>
           </div>
+
         </form>
       </div>
     </div>
   </div>
 </body>
 </html>
+
+
+

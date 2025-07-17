@@ -20,8 +20,6 @@
                     <ul>
                         <li>Adicionar ou consultar correntistas cadastrados usando o menu <strong>Correntistas</strong></li>
                         <li>Adicionar ou consultar categorias no menu <strong>Categorias</strong></li>
-                        <li>Adicionar ou consultar contas usando o menu <strong>Minhas Contas</strong></li>
-                        <li>Acessar transações, extrato e orçamento como correntista também</li>
                     </ul>
                 </div>
 
@@ -29,6 +27,7 @@
                 <div th:if="${session.usuario != null and !session.usuario.admin}">
                     <p><strong>Como correntista, você poderá:</strong></p>
                     <ul>
+                        <li>Adicionar ou consultar suas <strong>contas</strong></li>
                         <li>Realizar <strong>transações</strong></li>
                         <li>Visualizar <strong>extratos</strong> da conta</li>
                         <li>Acompanhar seu <strong>orçamento anual</strong></li>

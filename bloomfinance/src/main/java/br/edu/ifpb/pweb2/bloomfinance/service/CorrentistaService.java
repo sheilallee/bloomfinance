@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.edu.ifpb.pweb2.bloomfinance.model.Correntista;
@@ -34,6 +36,10 @@ public class CorrentistaService {
 
     public Optional<Correntista> findByEmail(String email) {
         return correntistaRepository.findByEmail(email);
+    }
+    
+    public Page<Correntista> listarPaginadoOrdenadoPorIdDesc(Pageable pageable) {
+        return correntistaRepository.findAll(pageable);
     }
 }
 
