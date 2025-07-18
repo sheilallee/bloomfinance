@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import br.edu.ifpb.pweb2.bloomfinance.model.Transacao;
 import br.edu.ifpb.pweb2.bloomfinance.repository.TransacaoRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class TransacaoService {
@@ -35,5 +37,9 @@ public class TransacaoService {
 
     public void deleteById(Long id) {
         transacaoRepository.deleteById(id);
+    }
+
+    public Page<Transacao> findByCorrentista(Long correntistaId, Pageable pageable) {
+        return transacaoRepository.findByCorrentistaId(correntistaId, pageable);
     }
 }

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+<div th:replace="fragments/cabecalho :: cabecalho"></div>
+
+<div class="container conteudo">
+  <div class="card shadow">
+    <div class="card-header bg-light">
+      <h4>Minhas Transações</h4>
+    </div>
+    <div class="card-body">
+      <a th:href="@{/transacoes/form}" class="btn btn-success mb-3">Nova Transação</a>
+
+      <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+          <th>Data</th>
+          <th>Descrição</th>
+          <th>Valor</th>
+          <th>Movimento</th>
+          <th>Categoria</th>
+          <th>Conta</th>
+          <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="t : ${transacoes.content}">
+          <td th:text="${#dates.format(t.data, 'dd-MM-yyyy')}">Data</td>
+          <td th:text="${t.descricao}">Descrição</td>
+         <td th:text="${#numbers.formatCurrency(t.valor)}"></td>
+          <td th:text="${t.movimento}">Movimento</td>
+          <td th:text="${t.categoria.nome}">Categoria</td>
+          <td th:text="${t.conta.descricao}">Conta</td>
+          <td>
+            <a th:href="@{/transacoes/editar/{id}(id=${t.id})}" class="btn btn-sm btn-warning">Editar</a>
+            <a th:href="@{/transacoes/excluir/{id}(id=${t.id})}" class="btn btn-sm btn-danger"
+               onclick="return confirm('Deseja realmente excluir esta transação?')">Excluir</a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <div class="d-flex justify-content-between">
+        <span th:text="'Página ' + ${transacoes.number + 1} + ' de ' + ${transacoes.totalPages}"></span>
+        <div>
+          <a th:if="${transacoes.hasPrevious()}" th:href="@{/transacoes(page=${transacoes.number - 1})}" class="btn btn-outline-secondary btn-sm">Anterior</a>
+          <a th:if="${transacoes.hasNext()}" th:href="@{/transacoes(page=${transacoes.number + 1})}" class="btn btn-outline-secondary btn-sm">Próxima</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

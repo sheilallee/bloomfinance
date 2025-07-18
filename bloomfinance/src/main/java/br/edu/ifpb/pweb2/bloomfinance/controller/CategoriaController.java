@@ -29,7 +29,8 @@ public class CategoriaController {
             PageRequest.of(page, size, Sort.by("id").ascending())
         );
 
-        model.addAttribute("categorias", pagina.getContent());
+        //model.addAttribute("categorias", pagina.getContent());
+        model.addAttribute("categorias", pagina);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", pagina.getTotalPages());
         model.addAttribute("titulo", "Categorias");

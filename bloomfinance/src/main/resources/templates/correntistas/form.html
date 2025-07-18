@@ -11,7 +11,7 @@
       </div>
       <div class="card-body">
         <form th:action="@{/correntistas/salvar}" th:object="${correntista}" method="post">
-          
+
           <input type="hidden" th:field="*{id}" />
 
           <div class="mb-3">
@@ -19,8 +19,7 @@
             <input type="text"
                    th:field="*{nome}"
                    class="form-control"
-                   th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid'"
-                   th:attr="readonly=${correntista.id != null} ? 'readonly' : null">
+                   th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid'">
             <div class="invalid-feedback" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></div>
           </div>
 
@@ -29,35 +28,22 @@
             <input type="email"
                    th:field="*{email}"
                    class="form-control"
-                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
-                   th:attr="readonly=${correntista.id != null} ? 'readonly' : null">
+                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'">
             <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
           </div>
 
           <div class="mb-3">
             <label class="form-label">Senha:</label>
-
             <input type="password"
-                  th:if="${correntista.id == null}"
-                  th:field="*{senha}"
-                  class="form-control"
-                  placeholder="Informe uma senha"
-                  th:classappend="${#fields.hasErrors('senha')} ? 'is-invalid'">
+                   th:field="*{senha}"
+                   class="form-control"
+                   placeholder="Informe uma senha"
+                   th:classappend="${#fields.hasErrors('senha')} ? 'is-invalid'">
             <div class="invalid-feedback" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></div>
-
-            <input type="password"
-                  th:if="${correntista.id != null}"
-                  class="form-control"
-                  value="********"
-                  disabled
-                  placeholder="Senha oculta">
-
           </div>
 
           <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox"
-                   th:field="*{admin}"
-                   th:attr="disabled=${correntista.id != null}">
+            <input class="form-check-input" type="checkbox" th:field="*{admin}">
             <label class="form-check-label">Administrador?</label>
           </div>
 
@@ -77,6 +63,4 @@
   </div>
 </body>
 </html>
-
-
 

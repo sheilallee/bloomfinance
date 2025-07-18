@@ -33,17 +33,18 @@
             </tr>
           </tbody>
         </table>
-        <div class="d-flex justify-content-between align-items-center mt-3">
-          <span th:text="'Página ' + ${currentPage + 1} + ' de ' + ${totalPages}"></span>
-          <div>
-            <a th:if="${currentPage > 0}" 
-              th:href="@{/categorias(page=${currentPage - 1}, size=5)}" 
-              class="btn btn-outline-secondary btn-sm">Anterior</a>
+        <div class="d-flex justify-content-between mt-3">
+            <span th:text="'Página ' + ${categorias.number + 1} + ' de ' + ${categorias.totalPages}"></span>
 
-            <a th:if="${currentPage + 1 < totalPages}" 
-              th:href="@{/categorias(page=${currentPage + 1}, size=5)}" 
-              class="btn btn-outline-secondary btn-sm">Próxima</a>
-          </div>
+            <div>
+                <a th:if="${categorias.hasPrevious()}"
+                  th:href="@{/categorias(page=${categorias.number - 1}, size=${categorias.size})}"
+                  class="btn btn-outline-secondary btn-sm">Anterior</a>
+
+                <a th:if="${categorias.hasNext()}"
+                  th:href="@{/categorias(page=${categorias.number + 1}, size=${categorias.size})}"
+                  class="btn btn-outline-secondary btn-sm">Próxima</a>
+            </div>
         </div>
       </div>
     </div>

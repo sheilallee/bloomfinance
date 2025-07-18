@@ -21,7 +21,7 @@
               <th>Email</th>
               <th>Admin</th>
               <th>Bloqueado</th>
-              <th></th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -37,11 +37,14 @@
                 <i class="bi bi-lock-fill text-danger" th:if="${c.bloqueado}"></i>
                 <i class="bi bi-unlock text-success" th:unless="${c.bloqueado}"></i>
               </td>
-              <td class="text-center" style="width: 60px;">
-                <a class="btn btn-sm btn-sm btn-warning" th:href="@{'/correntistas/editar/' + ${c.id}}" title="Editar bloqueio">
-                    <i class="bi bi-pencil "></i>
-                </a>
-             </td>
+              <td>
+                <a class="btn btn-sm btn-warning" th:href="@{'/correntistas/editar/' + ${c.id}}"><i class="bi bi-pencil"></i></a>
+                <a class="btn btn-sm btn-danger" th:href="@{'/correntistas/excluir/' + ${c.id}}"
+                   onclick="return confirm('Deseja realmente excluir?')">
+                  <i class="bi bi-trash"></i>
+                </a> 
+              </td>
+
             </tr>
           </tbody>
         </table>
