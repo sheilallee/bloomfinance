@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.edu.ifpb.pweb2.bloomfinance.model.Correntista;
 import br.edu.ifpb.pweb2.bloomfinance.service.CorrentistaService;
@@ -100,8 +101,9 @@ public class CorrentistaController {
     }
 
     @GetMapping("/excluir/{id}")
-    public String excluir(@PathVariable Long id) {
-        correntistaService.deleteById(id);
+    public String excluir(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        String mensagem = correntistaService.excluirSePossivel(id);
+        redirectAttributes.addFlashAttribute("mensagem", mensagem);
         return "redirect:/correntistas";
     }
 }

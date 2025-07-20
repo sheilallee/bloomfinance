@@ -13,6 +13,7 @@
         </div>
       </div>
       <div class="card-body">
+        <div th:if="${mensagem}" class="alert alert-info" th:text="${mensagem}"></div>
         <table class="table table-striped table-bordered">
           <thead class="table-light">
             <tr>
@@ -21,7 +22,7 @@
               <th>Email</th>
               <th>Admin</th>
               <th>Bloqueado</th>
-              <th>Ações</th>
+              <th style="width: 1%; white-space: nowrap;">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -37,7 +38,7 @@
                 <i class="bi bi-lock-fill text-danger" th:if="${c.bloqueado}"></i>
                 <i class="bi bi-unlock text-success" th:unless="${c.bloqueado}"></i>
               </td>
-              <td>
+              <td style="white-space: nowrap;">
                 <a class="btn btn-sm btn-warning" th:href="@{'/correntistas/editar/' + ${c.id}}"><i class="bi bi-pencil"></i></a>
                 <a class="btn btn-sm btn-danger" th:href="@{'/correntistas/excluir/' + ${c.id}}"
                    onclick="return confirm('Deseja realmente excluir?')">

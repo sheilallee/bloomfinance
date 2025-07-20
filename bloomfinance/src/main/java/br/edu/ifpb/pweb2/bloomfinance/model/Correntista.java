@@ -2,8 +2,14 @@ package br.edu.ifpb.pweb2.bloomfinance.model;
 
 
 import java.io.Serializable;
+import java.util.List;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -32,4 +38,7 @@ public class Correntista implements Serializable {
     private boolean admin;
 
     private boolean bloqueado;
+
+    @OneToMany(mappedBy = "correntista", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Conta> contas;
 }

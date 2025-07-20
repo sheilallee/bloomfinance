@@ -21,21 +21,31 @@
           <th>Movimento</th>
           <th>Categoria</th>
           <th>Conta</th>
-          <th>Ações</th>
+          <th style="width: 1%; white-space: nowrap;">Ações</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="t : ${transacoes.content}">
           <td th:text="${#dates.format(t.data, 'dd-MM-yyyy')}">Data</td>
           <td th:text="${t.descricao}">Descrição</td>
-         <td th:text="${#numbers.formatCurrency(t.valor)}"></td>
+          <td th:text="${#numbers.formatCurrency(t.valor)}">Valor</td>
           <td th:text="${t.movimento}">Movimento</td>
           <td th:text="${t.categoria.nome}">Categoria</td>
           <td th:text="${t.conta.descricao}">Conta</td>
-          <td>
+          <td style="white-space: nowrap;">
             <a th:href="@{/transacoes/editar/{id}(id=${t.id})}" class="btn btn-sm btn-warning">Editar</a>
             <a th:href="@{/transacoes/excluir/{id}(id=${t.id})}" class="btn btn-sm btn-danger"
                onclick="return confirm('Deseja realmente excluir esta transação?')">Excluir</a>
+            <a class="btn btn-sm btn-primary" data-bs-toggle="modal"
+               th:attr="data-bs-target='#addComentarioModal__' + ${t.id}">
+              <i class="bi bi-chat-left-text"></i>
+            </a>
+            <a class="btn btn-sm btn-info"
+               th:if="${t.comentarios != null and !t.comentarios.isEmpty()}"
+               data-bs-toggle="modal"
+               th:attr="data-bs-target='#verComentariosModal__' + ${t.id}">
+              <i class="bi bi-eye-fill"></i>
+            </a>
           </td>
         </tr>
         </tbody>
@@ -48,9 +58,67 @@
           <a th:if="${transacoes.hasNext()}" th:href="@{/transacoes(page=${transacoes.number + 1})}" class="btn btn-outline-secondary btn-sm">Próxima</a>
         </div>
       </div>
-
     </div>
   </div>
 </div>
+
+<div th:each="t : ${transacoes.content}">
+  <div class="modal fade" th:id="'addComentarioModal__' + ${t.id}" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form th:action="@{/comentarios/salvar}" method="post">
+          <div class="modal-header">
+            <h5 class="modal-title">Adicionar Comentário</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" name="transacaoId" th:value="${t.id}" />
+            <textarea name="texto" class="form-control" rows="3" required></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success">Salvar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade"
+       th:if="${t.comentarios != null and !t.comentarios.isEmpty()}"
+       th:id="'verComentariosModal__' + ${t.id}" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Comentários</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div th:each="c : ${t.comentarios}">
+            <form th:action="@{/comentarios/editar}" method="post" class="mb-2">
+              <input type="hidden" name="id" th:value="${c.id}" />
+              <textarea name="texto" class="form-control mb-1" th:text="${c.texto}" rows="4"></textarea>
+              <button type="submit" class="btn btn-sm btn-success">Atualizar</button>
+              <a th:href="@{/comentarios/excluir/{id}(id=${c.id})}" class="btn btn-sm btn-danger"
+                 onclick="return confirm('Deseja excluir este comentário?')">Excluir</a>
+            </form>
+            <hr />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
