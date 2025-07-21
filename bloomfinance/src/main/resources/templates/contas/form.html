@@ -6,9 +6,20 @@
 
 <div class="container mt-5">
     <h2 th:text="${conta.id == null} ? 'Nova Conta' : 'Editar Conta'"></h2>
+    <div th:if="${erro}" class="alert alert-danger" th:text="${erro}"></div>
     <form th:action="@{/contas/salvar}" th:object="${conta}" method="post">
         <input type="hidden" th:field="*{id}"/>
-        
+
+        <div class="mb-3">
+            <label class="form-label">Número da Conta</label>
+            <input type="text" class="form-control"
+                   th:field="*{numero}"
+                   pattern="^\d{4}-\d{1}$"
+                   placeholder="Ex: 3212-1"
+                   required>
+            <div class="form-text">Formato: XXXX-X</div>
+        </div>
+
         <div class="mb-3">
             <label class="form-label">Descrição</label>
             <input type="text" class="form-control" th:field="*{descricao}" required>
@@ -16,21 +27,39 @@
 
         <div class="mb-3">
             <label class="form-label">Tipo</label>
-            <select class="form-control" th:field="*{tipo}">
+            <select class="form-control" th:field="*{tipo}" id="tipoConta">
                 <option th:value="CORRENTE">Conta Corrente</option>
                 <option th:value="CARTAO">Cartão de Crédito</option>
             </select>
         </div>
 
-        <div class="mb-3">
+        <div class="mb-3" id="fechamento-group">
             <label class="form-label">Dia de Fechamento</label>
             <input type="number" class="form-control" th:field="*{diaFechamento}" placeholder="Somente para cartão">
         </div>
+
 
         <button type="submit" class="btn btn-primary">Salvar</button>
         <a th:href="@{/contas}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
+<script>
+    function toggleFechamento() {
+        const tipoSelect = document.getElementById("tipoConta");
+        const fechamentoGroup = document.getElementById("fechamento-group");
+        
+        if (tipoSelect.value === "CARTAO") {
+            fechamentoGroup.style.display = "block";
+        } else {
+            fechamentoGroup.style.display = "none";
+        }
+    }
 
+    document.addEventListener("DOMContentLoaded", function () {
+        const tipoSelect = document.getElementById("tipoConta");
+        tipoSelect.addEventListener("change", toggleFechamento);
+        toggleFechamento(); //executa no carregamento inicial
+    });
+</script>
 </body>
 </html>

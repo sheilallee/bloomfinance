@@ -44,7 +44,6 @@ public class ContaService {
     // public Conta save(Conta conta) {
     //     return contaRepository.save(conta);
         //}
-    
     public Conta save(Conta conta) {
         Correntista correntista = correntistaService
             .findById(conta.getCorrentista().getId())
@@ -52,7 +51,16 @@ public class ContaService {
 
         conta.setCorrentista(correntista);
 
-        // Regra: se for CARTAO, diaFechamento é obrigatório
+        //verifica duplicidade de número da conta
+        Optional<Conta> contaExistente = contaRepository.findByNumeroAndCorrentistaId(
+            conta.getNumero(), correntista.getId()
+        );
+        
+        if (contaExistente.isPresent() && !contaExistente.get().getId().equals(conta.getId())) {
+            throw new IllegalArgumentException("Já existe uma conta com este número.");
+        }
+
+        //valida fechamento se tipo for CARTAO
         if (conta.getTipo() == TipoConta.CARTAO && conta.getDiaFechamento() == null) {
             throw new IllegalArgumentException("O dia de fechamento é obrigatório para cartões de crédito.");
         }

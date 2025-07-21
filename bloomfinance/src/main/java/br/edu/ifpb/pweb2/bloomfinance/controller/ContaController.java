@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import br.edu.ifpb.pweb2.bloomfinance.model.Conta;
 import br.edu.ifpb.pweb2.bloomfinance.model.Correntista;
 import br.edu.ifpb.pweb2.bloomfinance.service.ContaService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/contas")
@@ -71,12 +73,25 @@ public class ContaController {
         return "contas/form";
     }
 
+    
     @PostMapping("/salvar")
-    public String salvar(@ModelAttribute Conta conta, HttpSession session) {
+    public String salvar(@Valid @ModelAttribute Conta conta, BindingResult result, HttpSession session, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("conta", conta);
+            return "contas/form";
+        }
+
         Correntista usuario = (Correntista) session.getAttribute("usuario");
         conta.setCorrentista(usuario);
-        contaService.save(conta);
-        return "redirect:/contas";
+
+        try {
+            contaService.save(conta);
+            return "redirect:/contas";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("erro", e.getMessage());
+            model.addAttribute("conta", conta);
+            return "contas/form";
+        }
     }
 
     @GetMapping("/editar/{id}")
