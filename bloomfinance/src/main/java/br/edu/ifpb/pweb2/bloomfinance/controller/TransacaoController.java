@@ -1,5 +1,10 @@
 package br.edu.ifpb.pweb2.bloomfinance.controller;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Locale;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -80,20 +85,37 @@ public class TransacaoController {
 
     @PostMapping("/salvar")
     public String salvar(@Valid @ModelAttribute Transacao transacao,
-                         BindingResult result,
-                         Model model,
-                         HttpSession session) {
+                        BindingResult result,
+                        Model model,
+                        HttpSession session,
+                        @RequestParam("valor") String valorTexto) { 
+
         Correntista usuario = (Correntista) session.getAttribute("usuario");
 
         if (usuario == null || usuario.isAdmin()) {
             return "redirect:/auth";
         }
 
+        //converte o valor manualmente usando o mesmo formatador
+        try {
+            NumberFormat format = NumberFormat.getInstance(new Locale("pt", "BR"));
+            Number number = format.parse(valorTexto.trim());
+            transacao.setValor(BigDecimal.valueOf(number.doubleValue()));
+        } catch (ParseException e) {
+            result.rejectValue("valor", "valor.invalido", "Valor inválido");
+        }
+
         if (result.hasErrors()) {
             model.addAttribute("categorias", categoriaService.findAtivas());
             model.addAttribute("contas", contaService.findByCorrentistaId(usuario.getId()));
-            model.addAttribute("titulo", "Nova Transação");
+            model.addAttribute("titulo", transacao.getId() == null ? "Nova Transação" : "Editar Transação");
             return "transacoes/form";
+        }
+
+        //preserva os comentários em edição
+        if (transacao.getId() != null) {
+            Transacao existente = transacaoService.findById(transacao.getId()).orElseThrow();
+            transacao.setComentarios(existente.getComentarios());
         }
 
         transacaoService.save(transacao);

@@ -35,8 +35,11 @@
           <td th:text="${t.conta.descricao}">Conta</td>
           <td style="white-space: nowrap;">
             <a th:href="@{/transacoes/editar/{id}(id=${t.id})}" class="btn btn-sm btn-warning">Editar</a>
-            <a th:href="@{/transacoes/excluir/{id}(id=${t.id})}" class="btn btn-sm btn-danger"
-               onclick="return confirm('Deseja realmente excluir esta transação?')">Excluir</a>
+            <button type="button" class="btn btn-sm btn-danger"
+                data-bs-toggle="modal"
+                th:attr="data-bs-target='#confirmExcluirModal__' + ${t.id}">
+              Excluir
+            </button>
             <a class="btn btn-sm btn-primary" data-bs-toggle="modal"
                th:attr="data-bs-target='#addComentarioModal__' + ${t.id}">
               <i class="bi bi-chat-left-text"></i>
@@ -48,6 +51,23 @@
               <i class="bi bi-eye-fill"></i>
             </a>
           </td>
+          <div class="modal fade" th:id="'confirmExcluirModal__' + ${t.id}" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                  <h5 class="modal-title">Confirmar Exclusão</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <p>Deseja realmente excluir esta transação?</p>
+                </div>
+                <div class="modal-footer">
+                  <a th:href="@{/transacoes/excluir/{id}(id=${t.id})}" class="btn btn-danger">Sim, Excluir</a>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </tr>
         </tbody>
       </table>
