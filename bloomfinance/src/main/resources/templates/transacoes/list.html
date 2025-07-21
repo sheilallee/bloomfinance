@@ -26,7 +26,8 @@
         </thead>
         <tbody>
         <tr th:each="t : ${transacoes.content}">
-          <td th:text="${#dates.format(t.data, 'dd-MM-yyyy')}">Data</td>
+          <tr th:each="t : ${transacoes.content}">
+          <td th:text="${#temporals.format(t.data, 'dd/MM/yyyy')}">Data</td>
           <td th:text="${t.descricao}">Descrição</td>
           <td th:text="${#numbers.formatCurrency(t.valor)}">Valor</td>
           <td th:text="${t.movimento}">Movimento</td>

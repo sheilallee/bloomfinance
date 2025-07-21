@@ -2,13 +2,14 @@ package br.edu.ifpb.pweb2.bloomfinance.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -44,8 +45,8 @@ public class Transacao implements Serializable {
     private Movimento movimento;
 
     @NotNull(message = "A data é obrigatória.")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date data;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate data;
 
     @DecimalMin(value = "0.01", message = "O valor deve ser maior que zero.")
     @NotNull(message = "O valor é obrigatório.")
@@ -61,6 +62,7 @@ public class Transacao implements Serializable {
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
+    @Column(length = 500)
     @OneToMany(mappedBy = "transacao", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comentario> comentarios = new ArrayList<>();
 }

@@ -89,7 +89,6 @@ public class ContaController {
             return "redirect:/contas";
         } catch (IllegalArgumentException e) {
             model.addAttribute("erro", e.getMessage());
-            model.addAttribute("conta", conta);
             return "contas/form";
         }
     }

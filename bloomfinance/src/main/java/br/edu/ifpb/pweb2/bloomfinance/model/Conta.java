@@ -14,6 +14,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,10 +31,14 @@ public class Conta implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Pattern(regexp = "^\\d{4}-\\d{1}$", message = "O número da conta deve seguir o formato 9999-9.")
+    @NotBlank(message = "O número é obrigatório.")
+    @Pattern(regexp = "^\\d{4}-\\d{1}$", message = "Formato inválido. Use 9999-9.")
     private String numero;
+
+    @NotBlank(message = "A descrição é obrigatória.")
     private String descricao;
 
+    @NotNull(message = "O tipo é obrigatório.")
     @Enumerated(EnumType.STRING)
     private TipoConta tipo;
 

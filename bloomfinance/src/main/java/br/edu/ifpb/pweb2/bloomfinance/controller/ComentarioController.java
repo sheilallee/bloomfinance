@@ -47,4 +47,11 @@ public class ComentarioController {
         comentarioService.deleteById(id);
         return "redirect:/transacoes";
     }
+
+    @GetMapping("/form/{transacaoId}")
+    public String form(@PathVariable Long transacaoId, org.springframework.ui.Model model) {
+        Transacao transacao = transacaoService.findById(transacaoId).orElseThrow();
+        model.addAttribute("transacao", transacao);
+        return "comentarios/form";
+    }
 }

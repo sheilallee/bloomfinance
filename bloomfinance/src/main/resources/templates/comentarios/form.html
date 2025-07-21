@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+<header th:replace="fragments/cabecalho :: cabecalho"></header>
+
+<div class="container mt-5">
+  <h2>Adicionar Comentário</h2>
+
+  <form th:action="@{/comentarios/salvar}" method="post">
+    <input type="hidden" name="transacaoId" th:value="${transacao.id}" />
+
+    <div class="mb-3">
+      <label for="texto" class="form-label">Comentário</label>
+      <textarea class="form-control" id="texto" name="texto" rows="4"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salvar</button>
+  </form>
+</div>
+
+</body>
+</html>
