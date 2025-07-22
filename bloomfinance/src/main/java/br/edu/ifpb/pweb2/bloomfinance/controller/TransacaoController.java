@@ -26,7 +26,7 @@ import br.edu.ifpb.pweb2.bloomfinance.service.CategoriaService;
 import br.edu.ifpb.pweb2.bloomfinance.service.ContaService;
 import br.edu.ifpb.pweb2.bloomfinance.service.TransacaoService;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
+
 
 @Controller
 @RequestMapping("/transacoes")
@@ -47,7 +47,8 @@ public class TransacaoController {
                          @RequestParam(defaultValue = "5") int size) {
         Correntista usuario = (Correntista) session.getAttribute("usuario");
 
-        if (usuario == null || usuario.isAdmin()) {
+       // if (usuario == null || usuario.isAdmin()) {
+       if (usuario == null) {
             return "redirect:/auth";
         }
 
@@ -65,7 +66,8 @@ public class TransacaoController {
                        HttpSession session) {
         Correntista usuario = (Correntista) session.getAttribute("usuario");
 
-        if (usuario == null || usuario.isAdmin()) {
+        //if (usuario == null || usuario.isAdmin()) {
+        if (usuario == null) {
             return "redirect:/auth";
         }
 
@@ -83,7 +85,7 @@ public class TransacaoController {
         return "transacoes/form";
     }
 
-    @PostMapping("/salvar")
+/*    @PostMapping("/salvar")
     public String salvar(@Valid @ModelAttribute Transacao transacao,
                         BindingResult result,
                         Model model,
@@ -120,7 +122,65 @@ public class TransacaoController {
 
         transacaoService.save(transacao);
         return "redirect:/transacoes";
+    } */
+   
+    @PostMapping("/salvar")
+    public String salvar(@ModelAttribute Transacao transacao,  
+                        BindingResult result,
+                        Model model,
+                        HttpSession session,
+                        @RequestParam("valorTexto") String valorTexto) {
+
+        Correntista usuario = (Correntista) session.getAttribute("usuario");
+       // if (usuario == null || usuario.isAdmin()) {
+        if (usuario == null) {
+            return "redirect:/auth";
+        }
+
+        //verifica se a conta realmente pertence ao usuário logado
+        if (transacao.getConta() == null || 
+            !transacao.getConta().getCorrentista().getId().equals(usuario.getId())) {
+            return "redirect:/transacoes";
+        }
+
+        //converte e valida o valor manualmente
+        if (valorTexto != null && !valorTexto.isBlank()) {
+            try {
+                NumberFormat format = NumberFormat.getInstance(new Locale("pt", "BR"));
+                Number number = format.parse(valorTexto.trim());
+                BigDecimal valor = BigDecimal.valueOf(number.doubleValue());
+
+                if (valor.compareTo(BigDecimal.ZERO) <= 0) {
+                    result.rejectValue("valor", "valor.min", "O valor deve ser maior que zero.");
+                } else {
+                    transacao.setValor(valor);
+                }
+
+            } catch (ParseException e) {
+                result.rejectValue("valor", "valor.invalido", "Valor inválido.");
+            }
+        } else {
+            result.rejectValue("valor", "valor.obrigatorio", "O valor é obrigatório.");
+        }
+
+        //se houver erro, retorna para o formulário com os dados e mensagens
+        if (result.hasErrors()) {
+            model.addAttribute("categorias", categoriaService.findAtivas());
+            model.addAttribute("contas", contaService.findByCorrentistaId(usuario.getId()));
+            model.addAttribute("titulo", transacao.getId() == null ? "Nova Transação" : "Editar Transação");
+            return "transacoes/form";
+        }
+
+        //se for edição, preserva os comentários
+        if (transacao.getId() != null) {
+            Transacao existente = transacaoService.findById(transacao.getId()).orElseThrow();
+            transacao.setComentarios(existente.getComentarios());
+        }
+
+        transacaoService.save(transacao);
+        return "redirect:/transacoes";
     }
+
 
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable Long id,

@@ -60,7 +60,7 @@
             <div class="invalid-feedback" th:errors="*{descricao}"></div>
           </div>
 
-          <div class="mb-3">
+          <!--<div class="mb-3">
             <label class="form-label">Valor:</label>
             <input type="text"
                   th:field="*{valor}"
@@ -68,7 +68,27 @@
                   placeholder="Ex: 10,99"
                   th:classappend="${#fields.hasErrors('valor')} ? 'is-invalid'" />
             <div class="invalid-feedback" th:errors="*{valor}"></div>
-          </div>
+          </div>-->
+          <!--<div class="mb-3">
+            <label class="form-label">Valor:</label>
+            <input type="text"
+                  name="valorTexto"
+                  class="form-control"
+                  placeholder="Ex: 10,99"
+                  th:value="${#numbers.formatDecimal(transacao.valor, 1, 'COMMA', 2, 'COMMA')}"
+                  th:classappend="${#fields.hasErrors('valor')} ? 'is-invalid'" />
+            <div class="invalid-feedback" th:errors="*{valor}"></div>
+          </div>-->
+          <div class="mb-3">
+            <label class="form-label">Valor:</label>
+            <input type="text"
+                  name="valorTexto"
+                  class="form-control"
+                  placeholder="Ex: 10,99"
+                  th:value="${#numbers.formatDecimal(transacao.valor, 1, 'POINT', 2, 'COMMA')}"
+                  th:classappend="${#fields.hasErrors('valor')} ? 'is-invalid'" />
+            <div class="invalid-feedback" th:errors="*{valor}"></div>
+          </div>
 
           <button type="submit" class="btn btn-primary">Salvar</button>
           <a th:href="@{/transacoes}" class="btn btn-secondary ms-2">Cancelar</a>

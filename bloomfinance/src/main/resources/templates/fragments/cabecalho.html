@@ -22,6 +22,9 @@
       <a class="nav-item nav-link" th:href="@{/contas}" 
          th:if="${session.usuario != null and session.usuario.admin}">Contas</a>
 
+      <a class="nav-item nav-link" th:href="@{/transacoes}" 
+         th:if="${session.usuario != null and session.usuario.admin}">Transações</a>
+
       <!-- Visível apenas para correntistas -->
       <a class="nav-item nav-link" th:href="@{/contas}" 
          th:if="${session.usuario != null and not session.usuario.admin}">Minhas Contas</a>
