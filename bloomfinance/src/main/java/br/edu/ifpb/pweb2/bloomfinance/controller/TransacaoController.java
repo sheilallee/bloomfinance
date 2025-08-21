@@ -1,8 +1,9 @@
 package br.edu.ifpb.pweb2.bloomfinance.controller;
 
+import java.beans.PropertyEditorSupport;
 import java.math.BigDecimal;
-import java.text.NumberFormat;
-import java.text.ParseException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,32 +28,52 @@ import br.edu.ifpb.pweb2.bloomfinance.model.Transacao;
 import br.edu.ifpb.pweb2.bloomfinance.service.CategoriaService;
 import br.edu.ifpb.pweb2.bloomfinance.service.ContaService;
 import br.edu.ifpb.pweb2.bloomfinance.service.TransacaoService;
-import jakarta.servlet.http.HttpSession;
-
+import br.edu.ifpb.pweb2.bloomfinance.util.SecurityUtil;
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/transacoes")
 public class TransacaoController {
 
-    @Autowired
-    private TransacaoService transacaoService;
+    @Autowired private TransacaoService transacaoService;
+    @Autowired private ContaService contaService;
+    @Autowired private CategoriaService categoriaService;
+    @Autowired private SecurityUtil securityUtil;
 
-    @Autowired
-    private ContaService contaService;
-
-    @Autowired
-    private CategoriaService categoriaService;
+    /** Converte BigDecimal usando pt-BR (1.234,56) tanto para bind quanto para exibição */
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(BigDecimal.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                if (text == null) { setValue(null); return; }
+                String v = text.trim();
+                if (v.isEmpty()) { setValue(null); return; }
+                // remove separador de milhar e troca vírgula por ponto
+                v = v.replace(".", "").replace(",", ".");
+                try {
+                    setValue(new BigDecimal(v));
+                } catch (NumberFormatException e) {
+                    setValue(null);
+                }
+            }
+            @Override
+            public String getAsText() {
+                BigDecimal val = (BigDecimal) getValue();
+                if (val == null) return "";
+                DecimalFormatSymbols sy = new DecimalFormatSymbols(new Locale("pt","BR"));
+                DecimalFormat df = new DecimalFormat("#,##0.##", sy);
+                return df.format(val);
+            }
+        });
+    }
 
     @GetMapping
-    public String listar(HttpSession session, Model model,
+    public String listar(Model model,
                          @RequestParam(defaultValue = "0") int page,
                          @RequestParam(defaultValue = "5") int size) {
-        Correntista usuario = (Correntista) session.getAttribute("usuario");
-
-       // if (usuario == null || usuario.isAdmin()) {
-       if (usuario == null) {
-            return "redirect:/auth";
-        }
+        Correntista usuario = securityUtil.getCorrentistaAutenticadoOrNull();
+        if (usuario == null) return "redirect:/auth/login";
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Transacao> transacoesPage = transacaoService.findByCorrentista(usuario.getId(), pageable);
@@ -61,109 +84,55 @@ public class TransacaoController {
     }
 
     @GetMapping("/form")
-    public String form(Model model,
-                       @RequestParam(required = false) Long contaId,
-                       HttpSession session) {
-        Correntista usuario = (Correntista) session.getAttribute("usuario");
+    public String form(Model model, @RequestParam(required = false) Long contaId) {
+        Correntista usuario = securityUtil.getCorrentistaAutenticadoOrNull();
+        if (usuario == null) return "redirect:/auth/login";
 
-        //if (usuario == null || usuario.isAdmin()) {
-        if (usuario == null) {
-            return "redirect:/auth";
-        }
-
-        Transacao transacao = new Transacao();
-
+        Transacao t = new Transacao();
         if (contaId != null) {
             Conta conta = contaService.findById(contaId).orElseThrow();
-            transacao.setConta(conta);
+            if (!conta.getCorrentista().getId().equals(usuario.getId())) {
+                return "redirect:/transacoes";
+            }
+            t.setConta(conta);
         }
 
-        model.addAttribute("transacao", transacao);
+        model.addAttribute("transacao", t);
         model.addAttribute("categorias", categoriaService.findAtivas());
-        model.addAttribute("contas", contaService.findByCorrentistaId(usuario.getId())); 
+        model.addAttribute("contas", contaService.findByCorrentistaId(usuario.getId()));
         model.addAttribute("titulo", "Nova Transação");
         return "transacoes/form";
     }
 
-/*    @PostMapping("/salvar")
-    public String salvar(@Valid @ModelAttribute Transacao transacao,
-                        BindingResult result,
-                        Model model,
-                        HttpSession session,
-                        @RequestParam("valor") String valorTexto) { 
-
-        Correntista usuario = (Correntista) session.getAttribute("usuario");
-
-        if (usuario == null || usuario.isAdmin()) {
-            return "redirect:/auth";
-        }
-
-        //converte o valor manualmente usando o mesmo formatador
-        try {
-            NumberFormat format = NumberFormat.getInstance(new Locale("pt", "BR"));
-            Number number = format.parse(valorTexto.trim());
-            transacao.setValor(BigDecimal.valueOf(number.doubleValue()));
-        } catch (ParseException e) {
-            result.rejectValue("valor", "valor.invalido", "Valor inválido");
-        }
-
-        if (result.hasErrors()) {
-            model.addAttribute("categorias", categoriaService.findAtivas());
-            model.addAttribute("contas", contaService.findByCorrentistaId(usuario.getId()));
-            model.addAttribute("titulo", transacao.getId() == null ? "Nova Transação" : "Editar Transação");
-            return "transacoes/form";
-        }
-
-        //preserva os comentários em edição
-        if (transacao.getId() != null) {
-            Transacao existente = transacaoService.findById(transacao.getId()).orElseThrow();
-            transacao.setComentarios(existente.getComentarios());
-        }
-
-        transacaoService.save(transacao);
-        return "redirect:/transacoes";
-    } */
-   
     @PostMapping("/salvar")
-    public String salvar(@ModelAttribute Transacao transacao,  
-                        BindingResult result,
-                        Model model,
-                        HttpSession session,
-                        @RequestParam("valorTexto") String valorTexto) {
+    public String salvar(@Valid @ModelAttribute Transacao transacao,
+                         BindingResult result,
+                         Model model) {
 
-        Correntista usuario = (Correntista) session.getAttribute("usuario");
-       // if (usuario == null || usuario.isAdmin()) {
-        if (usuario == null) {
-            return "redirect:/auth";
-        }
+        Correntista usuario = securityUtil.getCorrentistaAutenticadoOrNull();
+        if (usuario == null) return "redirect:/auth/login";
 
-        //verifica se a conta realmente pertence ao usuário logado
-        if (transacao.getConta() == null || 
-            !transacao.getConta().getCorrentista().getId().equals(usuario.getId())) {
-            return "redirect:/transacoes";
-        }
-
-        //converte e valida o valor manualmente
-        if (valorTexto != null && !valorTexto.isBlank()) {
-            try {
-                NumberFormat format = NumberFormat.getInstance(new Locale("pt", "BR"));
-                Number number = format.parse(valorTexto.trim());
-                BigDecimal valor = BigDecimal.valueOf(number.doubleValue());
-
-                if (valor.compareTo(BigDecimal.ZERO) <= 0) {
-                    result.rejectValue("valor", "valor.min", "O valor deve ser maior que zero.");
-                } else {
-                    transacao.setValor(valor);
-                }
-
-            } catch (ParseException e) {
-                result.rejectValue("valor", "valor.invalido", "Valor inválido.");
-            }
+        // Conta vem do form só com o ID - recarregar e validar 
+        if (transacao.getConta() == null || transacao.getConta().getId() == null) {
+            result.rejectValue("conta", "conta.obrigatoria", "Selecione a conta.");
         } else {
-            result.rejectValue("valor", "valor.obrigatorio", "O valor é obrigatório.");
+            Conta conta = contaService.findById(transacao.getConta().getId()).orElse(null);
+            if (conta == null) {
+                result.rejectValue("conta", "conta.invalida", "Conta inválida.");
+            } else if (!conta.getCorrentista().getId().equals(usuario.getId())) {
+                return "redirect:/transacoes";
+            } else {
+                transacao.setConta(conta);
+            }
         }
 
-        //se houver erro, retorna para o formulário com os dados e mensagens
+        // Validação do valor já convertido pelo binder
+        if (transacao.getValor() == null) {
+            result.rejectValue("valor", "valor.obrigatorio", "O valor é obrigatório.");
+        } else if (transacao.getValor().compareTo(BigDecimal.ZERO) <= 0) {
+            result.rejectValue("valor", "valor.min", "O valor deve ser maior que zero.");
+        }
+
         if (result.hasErrors()) {
             model.addAttribute("categorias", categoriaService.findAtivas());
             model.addAttribute("contas", contaService.findByCorrentistaId(usuario.getId()));
@@ -171,7 +140,7 @@ public class TransacaoController {
             return "transacoes/form";
         }
 
-        //se for edição, preserva os comentários
+        // Preserva comentários em edição
         if (transacao.getId() != null) {
             Transacao existente = transacaoService.findById(transacao.getId()).orElseThrow();
             transacao.setComentarios(existente.getComentarios());
@@ -181,19 +150,17 @@ public class TransacaoController {
         return "redirect:/transacoes";
     }
 
-
     @GetMapping("/editar/{id}")
-    public String editar(@PathVariable Long id,
-                         Model model,
-                         HttpSession session) {
-        Correntista usuario = (Correntista) session.getAttribute("usuario");
-        Transacao transacao = transacaoService.findById(id).orElseThrow();
+    public String editar(@PathVariable Long id, Model model) {
+        Correntista usuario = securityUtil.getCorrentistaAutenticadoOrNull();
+        if (usuario == null) return "redirect:/auth/login";
 
-        if (usuario == null || !transacao.getConta().getCorrentista().getId().equals(usuario.getId())) {
+        Transacao t = transacaoService.findById(id).orElseThrow();
+        if (!t.getConta().getCorrentista().getId().equals(usuario.getId())) {
             return "redirect:/transacoes";
         }
 
-        model.addAttribute("transacao", transacao);
+        model.addAttribute("transacao", t);
         model.addAttribute("categorias", categoriaService.findAtivas());
         model.addAttribute("contas", contaService.findByCorrentistaId(usuario.getId()));
         model.addAttribute("titulo", "Editar Transação");
@@ -202,8 +169,16 @@ public class TransacaoController {
 
     @GetMapping("/excluir/{id}")
     public String excluir(@PathVariable Long id) {
-        transacaoService.deleteById(id);
+        Correntista usuario = securityUtil.getCorrentistaAutenticadoOrNull();
+        if (usuario == null) return "redirect:/auth/login";
+
+        Transacao t = transacaoService.findById(id).orElse(null);
+        if (t != null && t.getConta().getCorrentista().getId().equals(usuario.getId())) {
+            transacaoService.deleteById(id);
+        }
         return "redirect:/transacoes";
     }
 }
+
+
 

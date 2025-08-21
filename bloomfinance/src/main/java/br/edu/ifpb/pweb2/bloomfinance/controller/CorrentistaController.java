@@ -1,7 +1,5 @@
 package br.edu.ifpb.pweb2.bloomfinance.controller;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,54 +15,87 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import br.edu.ifpb.pweb2.bloomfinance.dto.CorrentistaForm;
 import br.edu.ifpb.pweb2.bloomfinance.model.Correntista;
+import br.edu.ifpb.pweb2.bloomfinance.model.User;
+import br.edu.ifpb.pweb2.bloomfinance.repository.UserRepository;
 import br.edu.ifpb.pweb2.bloomfinance.service.CorrentistaService;
-import br.edu.ifpb.pweb2.bloomfinance.util.PasswordUtil;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-
+import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/correntistas")
+@RequiredArgsConstructor
 public class CorrentistaController {
 
-    @Autowired
-    private CorrentistaService correntistaService;
+    private final CorrentistaService correntistaService;
+    private final UserRepository userRepository;
 
     @GetMapping
     public String listar(Model model,
-                        @RequestParam(defaultValue = "0") int page,
-                        @RequestParam(defaultValue = "5") int size,
-                        HttpSession session) {
-
-        Correntista usuario = (Correntista) session.getAttribute("usuario");
-
-        if (usuario == null || !usuario.isAdmin()) {
-            return "redirect:/auth";
-        }
-
+                         @RequestParam(defaultValue = "0") int page,
+                         @RequestParam(defaultValue = "5") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Correntista> correntistasPage = correntistaService.listarPaginadoOrdenadoPorIdDesc(pageable);
 
         model.addAttribute("titulo", "Listagem de Correntistas");
         model.addAttribute("correntistas", correntistasPage);
-
         return "correntistas/list";
     }
 
     @GetMapping("/form")
     public String form(Model model) {
-        model.addAttribute("correntista", new Correntista());
         model.addAttribute("titulo", "Novo Correntista");
+        model.addAttribute("correntista", new CorrentistaForm());
+        return "correntistas/form";
+    }
+
+    @GetMapping("/editar/{id}")
+    public String editar(@PathVariable Long id, Model model) {
+        Correntista existente = correntistaService.findById(id).orElseThrow();
+
+        CorrentistaForm form = new CorrentistaForm();
+        form.setId(existente.getId());
+        form.setNome(existente.getNome());
+        form.setEmail(existente.getEmail());
+        form.setAdmin(existente.isAdmin());
+        form.setBloqueado(existente.isBloqueado());
+
+        User u = existente.getUser();
+        form.setUsername(u.getUsername());
+        form.setSenha(""); // senha NÃO é exibida; troca apenas se preencher
+
+        model.addAttribute("correntista", form);
+        model.addAttribute("titulo", "Editar Correntista");
         return "correntistas/form";
     }
 
     @PostMapping("/salvar")
-    public String salvar(@Valid @ModelAttribute Correntista correntista, BindingResult result, Model model) {
-        boolean novo = (correntista.getId() == null);
+    public String salvar(@Valid @ModelAttribute("correntista") CorrentistaForm form,
+                         BindingResult result,
+                         Model model,
+                         RedirectAttributes ra) {
 
-        if (novo && (correntista.getSenha() == null || correntista.getSenha().isBlank())) {
-            result.rejectValue("senha", "senha.obrigatoria", "A senha é obrigatória.");
+        boolean novo = (form.getId() == null);
+
+        // senha obrigatória no cadastro
+        if (novo && (form.getSenha() == null || form.getSenha().isBlank())) {
+            result.rejectValue("senha", "senha.obrigatoria", "A senha é obrigatória no cadastro.");
+        }
+
+        // username único: no novo, não pode existir; na edição, não pode pertencer a outro user
+        if (novo) {
+            if (userRepository.existsByUsername(form.getUsername())) {
+                result.rejectValue("username", "username.duplicado", "Este username já está em uso.");
+            }
+        } else {
+            Correntista atual = correntistaService.findById(form.getId()).orElseThrow();
+            String usernameAtual = atual.getUser().getUsername();
+
+            if (!usernameAtual.equals(form.getUsername())
+                    && userRepository.existsByUsername(form.getUsername())) {
+                result.rejectValue("username", "username.duplicado", "Este username já está em uso.");
+            }
         }
 
         if (result.hasErrors()) {
@@ -72,38 +103,24 @@ public class CorrentistaController {
             return "correntistas/form";
         }
 
-        if (!novo) {
-            Correntista existente = correntistaService.findById(correntista.getId()).orElseThrow();
-            existente.setNome(correntista.getNome());
-            existente.setEmail(correntista.getEmail());
-            existente.setAdmin(correntista.isAdmin());
-            existente.setBloqueado(correntista.isBloqueado());
-
-            if (correntista.getSenha() != null && !correntista.getSenha().isBlank()) {
-                existente.setSenha(PasswordUtil.hashPassword(correntista.getSenha()));
-            }
-
-            correntistaService.save(existente);
+        if (novo) {
+            correntistaService.criarComUserERoles(form);
+            ra.addFlashAttribute("mensagem", "Correntista criado com sucesso.");
         } else {
-            correntista.setSenha(PasswordUtil.hashPassword(correntista.getSenha()));
-            correntistaService.save(correntista);
+            correntistaService.atualizarComUserERoles(form);
+            ra.addFlashAttribute("mensagem", "Correntista atualizado com sucesso.");
         }
 
         return "redirect:/correntistas";
     }
 
-    @GetMapping("/editar/{id}")
-    public String editar(@PathVariable Long id, Model model) {
-        Correntista correntista = correntistaService.findById(id).orElseThrow();
-        model.addAttribute("correntista", correntista);
-        model.addAttribute("titulo", "Editar Correntista");
-        return "correntistas/form";
-    }
-
     @GetMapping("/excluir/{id}")
     public String excluir(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        String mensagem = correntistaService.excluirSePossivel(id);
+        String mensagem = correntistaService.excluirComUser(id);
         redirectAttributes.addFlashAttribute("mensagem", mensagem);
         return "redirect:/correntistas";
     }
 }
+
+
+

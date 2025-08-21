@@ -1,6 +1,5 @@
 package br.edu.ifpb.pweb2.bloomfinance.model;
 
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -9,7 +8,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -17,9 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
+@Getter @Setter @NoArgsConstructor
 public class Correntista implements Serializable {
 
     @Id
@@ -33,11 +32,12 @@ public class Correntista implements Serializable {
     @Email(message = "Informe um e-mail válido.")
     private String email;
 
-    private String senha;
-
     private boolean admin;
-
     private boolean bloqueado;
+
+    @OneToOne
+    @JoinColumn(name = "user_id") // FK para users.id
+    private User user;
 
     @OneToMany(mappedBy = "correntista", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Conta> contas;
