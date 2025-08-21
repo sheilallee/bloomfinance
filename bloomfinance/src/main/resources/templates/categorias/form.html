@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+  <div th:replace="fragments/cabecalho :: cabecalho"></div>
+
+  <div class="container conteudo">
+    <div class="card shadow">
+      <div class="card-header bg-light">
+        <h4 th:text="${categoria.id == null ? 'Cadastrar Categoria' : 'Editar Categoria'}"></h4>
+      </div>
+      <div class="card-body">
+        <form th:action="@{/categorias/salvar}" th:object="${categoria}" method="post">
+          <input type="hidden" th:field="*{id}"/>
+
+          <!-- Nome -->
+          <div class="mb-3">
+            <label class="form-label">Nome:</label>
+            <input type="text" th:field="*{nome}" class="form-control"
+                   th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid'"/>
+            <div class="invalid-feedback" th:errors="*{nome}"></div>
+          </div>
+
+          <!-- Natureza -->
+          <div class="mb-3">
+            <label class="form-label">Natureza:</label>
+            <select th:field="*{natureza}" class="form-select"
+                    th:classappend="${#fields.hasErrors('natureza')} ? 'is-invalid'">
+              <option value="">Selecione</option>
+              <option th:each="n : ${T(br.edu.ifpb.pweb2.bloomfinance.model.NaturezaCategoria).values()}"
+                      th:value="${n}" th:text="${n}"></option>
+            </select>
+            <div class="invalid-feedback" th:errors="*{natureza}"></div>
+          </div>
+
+          <!-- Ordem -->
+          <div class="mb-3">
+            <label class="form-label">Ordem:</label>
+            <input type="number" th:field="*{ordem}" class="form-control"
+                   th:classappend="${#fields.hasErrors('ordem')} ? 'is-invalid'"/>
+            <div class="invalid-feedback" th:errors="*{ordem}"></div>
+          </div>
+
+          <!-- Ativa -->
+          <div class="form-check mb-3">
+            <input type="checkbox" class="form-check-input" th:field="*{ativa}" id="ativaCheck">
+            <label class="form-check-label" for="ativaCheck">Ativa</label>
+          </div>
+
+          <!-- Botões -->
+          <button type="submit" class="btn btn-primary">Salvar</button>
+          <a th:href="@{/categorias}" class="btn btn-secondary ms-2">Cancelar</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

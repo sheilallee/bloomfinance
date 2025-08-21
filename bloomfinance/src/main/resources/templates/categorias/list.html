@@ -6,9 +6,13 @@
 
   <div class="container conteudo">
     <div class="card shadow">
-      <div class="card-header bg-light">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
         <h4 th:text="${titulo}">Categorias</h4>
+        <a th:href="@{/categorias/form}" class="btn btn-success btn-sm">
+          <i class="bi bi-plus-circle"></i> Nova Categoria
+        </a>
       </div>
+
       <div class="card-body">
         <table class="table table-striped table-bordered">
           <thead class="table-light">
@@ -18,6 +22,7 @@
               <th>Natureza</th>
               <th>Ordem</th>
               <th>Ativa</th>
+              <th style="width: 1%; white-space: nowrap;">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -30,24 +35,58 @@
                 <i class="bi bi-check-circle-fill text-success" th:if="${cat.ativa}"></i>
                 <i class="bi bi-x-circle-fill text-danger" th:unless="${cat.ativa}"></i>
               </td>
+              <td style="white-space: nowrap;">
+                <a th:href="@{/categorias/editar/{id}(id=${cat.id})}" 
+                   class="btn btn-sm btn-warning">
+                  <i class="bi bi-pencil"></i>
+                </a>
+                <button type="button" class="btn btn-sm btn-danger"
+                        data-bs-toggle="modal"
+                        th:attr="data-bs-target='#confirmExcluirModal__' + ${cat.id}">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
+
         <div class="d-flex justify-content-between mt-3">
-            <span th:text="'Página ' + ${categorias.number + 1} + ' de ' + ${categorias.totalPages}"></span>
+          <span th:text="'Página ' + ${categorias.number + 1} + ' de ' + ${categorias.totalPages}"></span>
+          <div>
+            <a th:if="${categorias.hasPrevious()}"
+               th:href="@{/categorias(page=${categorias.number - 1}, size=${categorias.size})}"
+               class="btn btn-outline-secondary btn-sm">Anterior</a>
 
-            <div>
-                <a th:if="${categorias.hasPrevious()}"
-                  th:href="@{/categorias(page=${categorias.number - 1}, size=${categorias.size})}"
-                  class="btn btn-outline-secondary btn-sm">Anterior</a>
-
-                <a th:if="${categorias.hasNext()}"
-                  th:href="@{/categorias(page=${categorias.number + 1}, size=${categorias.size})}"
-                  class="btn btn-outline-secondary btn-sm">Próxima</a>
-            </div>
+            <a th:if="${categorias.hasNext()}"
+               th:href="@{/categorias(page=${categorias.number + 1}, size=${categorias.size})}"
+               class="btn btn-outline-secondary btn-sm">Próxima</a>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Modais de exclusão -->
+  <div th:each="cat : ${categorias}">
+    <div class="modal fade" th:id="'confirmExcluirModal__' + ${cat.id}" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title">Confirmar Exclusão</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <p>Deseja realmente excluir a categoria <strong th:text="${cat.nome}">Categoria</strong>?</p>
+          </div>
+          <div class="modal-footer">
+            <a th:href="@{/categorias/excluir/{id}(id=${cat.id})}" class="btn btn-danger">Sim, Excluir</a>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
