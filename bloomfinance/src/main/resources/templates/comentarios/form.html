@@ -5,7 +5,9 @@
 <header th:replace="fragments/cabecalho :: cabecalho"></header>
 
 <div class="container mt-5">
-  <h2>Adicionar Comentário</h2>
+  <h2>
+    <i class="bi bi-chat-left-text"></i> Adicionar Comentário
+  </h2>
 
   <form th:action="@{/comentarios/salvar}" method="post">
     <input type="hidden" name="transacaoId" th:value="${transacao.id}" />
@@ -15,9 +17,13 @@
       <textarea class="form-control" id="texto" name="texto" rows="4"></textarea>
     </div>
 
-    <button type="submit" class="btn btn-primary">Salvar</button>
+    <button type="submit" class="btn btn-primary">
+      <i class="bi bi-save"></i> Salvar
+    </button>
   </form>
 </div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
 </body>
 </html>
