@@ -24,7 +24,7 @@
       <!-- Menus USUÁRIO (correntista) -->
       <a class="nav-item nav-link" th:href="@{/contas}"      sec:authorize="hasRole('USER')">Minhas Contas</a>
       <a class="nav-item nav-link" th:href="@{/transacoes}"  sec:authorize="hasRole('USER')">Transações</a>
-      <a class="nav-item nav-link" th:href="@{/extrato}"     sec:authorize="hasRole('USER')">Extrato</a>
+      <a class="nav-item nav-link" th:href="@{/extratos}"     sec:authorize="hasRole('USER')">Extrato</a>
       <a class="nav-item nav-link" th:href="@{/orcamento}"   sec:authorize="hasRole('USER')">Orçamento</a>
     </div>
 

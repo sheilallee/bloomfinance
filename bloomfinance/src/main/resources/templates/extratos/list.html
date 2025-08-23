@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="fragments/head :: head"></head>
+<body>
+<div th:replace="fragments/cabecalho :: cabecalho"></div>
+
+<div class="container mt-4">
+    <h2>Extrato da Conta</h2>
+    <p class="fw-bold" th:text="${conta.correntista.nome}"></p>
+
+    <div class="card p-3 mb-3 shadow-sm">
+        <form method="get" th:action="@{'/extratos/' + ${conta.id}}">
+            <div class="row mb-2">
+                <div class="col-md-3">
+                    <label for="mes">Mês</label>
+                    <select id="mes" name="mes" class="form-select">
+                        <option value="">Selecione</option>
+                        <option th:value="1" th:selected="${mesSelecionado == '1'}">Janeiro</option>
+                        <option th:value="2" th:selected="${mesSelecionado == '2'}">Fevereiro</option>
+                        <option th:value="3" th:selected="${mesSelecionado == '3'}">Março</option>
+                        <option th:value="4" th:selected="${mesSelecionado == '4'}">Abril</option>
+                        <option th:value="5" th:selected="${mesSelecionado == '5'}">Maio</option>
+                        <option th:value="6" th:selected="${mesSelecionado == '6'}">Junho</option>
+                        <option th:value="7" th:selected="${mesSelecionado == '7'}">Julho</option>
+                        <option th:value="8" th:selected="${mesSelecionado == '8'}">Agosto</option>
+                        <option th:value="9" th:selected="${mesSelecionado == '9'}">Setembro</option>
+                        <option th:value="10" th:selected="${mesSelecionado == '10'}">Outubro</option>
+                        <option th:value="11" th:selected="${mesSelecionado == '11'}">Novembro</option>
+                        <option th:value="12" th:selected="${mesSelecionado == '12'}">Dezembro</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="inicio">Data início</label>
+                    <input id="inicio" type="date" name="inicio"
+                           th:value="${#temporals.format(dataInicio, 'yyyy-MM-dd')}"
+                           class="form-control"/>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="fim">Data fim</label>
+                    <input id="fim" type="date" name="fim"
+                           th:value="${#temporals.format(dataFim, 'yyyy-MM-dd')}"
+                           class="form-control"/>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <table class="table table-striped shadow-sm">
+        <thead class="table-light">
+        <tr>
+            <th>Data</th>
+            <th>Categoria</th>
+            <th>Descrição</th>
+            <th>Valor</th>
+            <th>Saldo</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td colspan="4"><strong>Saldo Inicial</strong></td>
+            <td th:text="${#numbers.formatDecimal(saldoInicial, 1, 'COMMA', 2, 'POINT')}"></td>
+        </tr>
+
+        <tr th:each="linha : ${linhas}">
+            <td th:text="${#temporals.format(linha.data, 'dd/MM/yyyy')}"></td>
+            <td th:text="${linha.categoria}"></td>
+            <td>
+                <span th:text="${linha.descricao}"></span>
+                <a th:href="@{'/comentarios/transacao/' + ${linha.idTransacao}}"
+                   class="ms-2 text-info">[comentário]</a>
+            </td>
+            <td th:text="${linha.movimento.name() == 'CREDITO' ? '+' + linha.valor : '-' + linha.valor}"
+                th:classappend="${linha.movimento.name() == 'CREDITO'} ? 'text-success' : 'text-danger'"></td>
+            <td th:text="${#numbers.formatDecimal(linha.saldoAcumulado, 1, 'COMMA', 2, 'POINT')}"></td>
+        </tr>
+
+        <tr>
+            <td colspan="4"><strong>Saldo Final</strong></td>
+            <td th:text="${#numbers.formatDecimal(saldoFinal, 1, 'COMMA', 2, 'POINT')}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
