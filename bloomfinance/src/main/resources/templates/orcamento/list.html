@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+<div th:replace="fragments/cabecalho :: cabecalho"></div>
+
+<div class="container conteudo">
+  <div class="card shadow">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <h4>Orçamento</h4>
+
+      <form th:action="@{/orcamento}" method="get" class="d-flex align-items-center gap-2">
+        <select name="ano" class="form-select form-select-sm" style="width: 120px;">
+          <option th:each="a : ${anos}"
+                  th:value="${a}"
+                  th:selected="${a == anoSelecionado}"
+                  th:text="${a}">2025</option>
+        </select>
+        <button type="submit" class="btn btn-primary btn-sm">Aplicar</button>
+      </form>
+    </div>
+
+    <div class="card-body">
+
+      <!-- ENTRADAS -->
+      <h6 class="mb-2"><i class="bi bi-plus-circle text-success"></i> Entradas</h6>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+          <thead class="table-light">
+          <tr>
+            <th>Categoria</th>
+            <th>JANEIRO</th><th>FEVEREIRO</th><th>MARÇO</th><th>ABRIL</th>
+            <th>MAIO</th><th>JUNHO</th><th>JULHO</th><th>AGOSTO</th>
+            <th>SETEMBRO</th><th>OUTUBRO</th><th>NOVEMBRO</th><th>DEZEMBRO</th>
+            <th>TOTAL</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="linha : ${linhasEntrada}">
+            <td th:text="${linha.categoriaNome}">Categoria</td>
+            <td th:each="v : ${linha.meses}"
+                 th:text="${#numbers.formatDecimal(v, 1, 'POINT', 2, 'COMMA')}">0,00</td>
+            <td th:text="${#numbers.formatDecimal(linha.total, 1, 'POINT', 2, 'COMMA')}">0,00</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- SAÍDAS -->
+      <h6 class="mt-4 mb-2"><i class="bi bi-dash-circle text-danger"></i> Saídas</h6>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+          <thead class="table-light">
+          <tr>
+            <th>Categoria</th>
+            <th>JANEIRO</th><th>FEVEREIRO</th><th>MARÇO</th><th>ABRIL</th>
+            <th>MAIO</th><th>JUNHO</th><th>JULHO</th><th>AGOSTO</th>
+            <th>SETEMBRO</th><th>OUTUBRO</th><th>NOVEMBRO</th><th>DEZEMBRO</th>
+            <th>TOTAL</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="linha : ${linhasSaida}">
+            <td th:text="${linha.categoriaNome}">Categoria</td>
+            <td th:each="v : ${linha.meses}"
+                 th:text="${#numbers.formatDecimal(v, 1, 'POINT', 2, 'COMMA')}">0,00</td>
+            <td th:text="${#numbers.formatDecimal(linha.total, 1, 'POINT', 2, 'COMMA')}">0,00</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- INVESTIMENTOS -->
+      <h6 class="mt-4 mb-2"><i class="bi bi-graph-up-arrow text-primary"></i> Investimentos</h6>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+          <thead class="table-light">
+          <tr>
+            <th>Categoria</th>
+            <th>JANEIRO</th><th>FEVEREIRO</th><th>MARÇO</th><th>ABRIL</th>
+            <th>MAIO</th><th>JUNHO</th><th>JULHO</th><th>AGOSTO</th>
+            <th>SETEMBRO</th><th>OUTUBRO</th><th>NOVEMBRO</th><th>DEZEMBRO</th>
+            <th>TOTAL</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="linha : ${linhasInvestimento}">
+            <td th:text="${linha.categoriaNome}">Categoria</td>
+            <td th:each="v : ${linha.meses}"
+                 th:text="${#numbers.formatDecimal(v, 1, 'POINT', 2, 'COMMA')}">0,00</td>
+            <td th:text="${#numbers.formatDecimal(linha.total, 1, 'POINT', 2, 'COMMA')}">0,00</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>
