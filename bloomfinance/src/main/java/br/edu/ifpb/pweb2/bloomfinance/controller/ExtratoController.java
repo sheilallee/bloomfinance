@@ -17,6 +17,7 @@ import br.edu.ifpb.pweb2.bloomfinance.model.Conta;
 import br.edu.ifpb.pweb2.bloomfinance.model.Correntista;
 import br.edu.ifpb.pweb2.bloomfinance.model.Movimento;
 import br.edu.ifpb.pweb2.bloomfinance.model.Transacao;
+import br.edu.ifpb.pweb2.bloomfinance.repository.ComentarioRepository;
 import br.edu.ifpb.pweb2.bloomfinance.service.ContaService;
 import br.edu.ifpb.pweb2.bloomfinance.service.TransacaoService;
 import br.edu.ifpb.pweb2.bloomfinance.util.SecurityUtil;
@@ -28,6 +29,8 @@ public class ExtratoController {
     @Autowired private ContaService contaService;
     @Autowired private TransacaoService transacaoService;
     @Autowired private SecurityUtil securityUtil;
+    @Autowired private ComentarioRepository comentarioRepository;
+
 
         @GetMapping
         public String escolherConta(Model model) {
@@ -93,6 +96,8 @@ public class ExtratoController {
                         : t.getValor().negate();
                 saldoAcumulado = saldoAcumulado.add(valor);
 
+                boolean possuiComentario = comentarioRepository.existsByTransacaoId(t.getId());
+
                 linhas.add(new LinhaExtratoDTO(
                         t.getData(),
                         t.getCategoria() != null ? t.getCategoria().getNome() : "-",
@@ -100,7 +105,8 @@ public class ExtratoController {
                         t.getValor(),
                         t.getMovimento(),
                         t.getId(), 
-                        saldoAcumulado
+                        saldoAcumulado,
+                        possuiComentario   
                 ));
         }
 

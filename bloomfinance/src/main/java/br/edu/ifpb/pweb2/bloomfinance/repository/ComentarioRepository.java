@@ -9,4 +9,5 @@ import br.edu.ifpb.pweb2.bloomfinance.model.Comentario;
 
 public interface ComentarioRepository extends JpaRepository<Comentario, Long> {
     List<Comentario> findByTransacaoId(Long transacaoId);
+    boolean existsByTransacaoId(Long transacaoId);
 }

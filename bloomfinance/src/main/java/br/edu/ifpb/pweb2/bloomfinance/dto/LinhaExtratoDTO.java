@@ -13,10 +13,12 @@ public class LinhaExtratoDTO {
     private Movimento movimento;
     private Long idTransacao; 
     private BigDecimal saldoAcumulado;
+    private boolean possuiComentario; 
 
     public LinhaExtratoDTO(LocalDate data, String categoria, String descricao,
                            BigDecimal valor, Movimento movimento,
-                           Long idTransacao, BigDecimal saldoAcumulado) {
+                           Long idTransacao, BigDecimal saldoAcumulado,
+                           boolean possuiComentario) { 
         this.data = data;
         this.categoria = categoria;
         this.descricao = descricao;
@@ -24,6 +26,13 @@ public class LinhaExtratoDTO {
         this.movimento = movimento;
         this.idTransacao = idTransacao;
         this.saldoAcumulado = saldoAcumulado;
+        this.possuiComentario = possuiComentario;
+    }
+
+    public LinhaExtratoDTO(LocalDate data, String categoria, String descricao,
+                           BigDecimal valor, Movimento movimento,
+                           Long idTransacao, BigDecimal saldoAcumulado) {
+        this(data, categoria, descricao, valor, movimento, idTransacao, saldoAcumulado, false);
     }
 
     public LocalDate getData() { return data; }
@@ -33,4 +42,7 @@ public class LinhaExtratoDTO {
     public Movimento getMovimento() { return movimento; }
     public Long getIdTransacao() { return idTransacao; }
     public BigDecimal getSaldoAcumulado() { return saldoAcumulado; }
+
+    public boolean isPossuiComentario() { return possuiComentario; } 
+    public void setPossuiComentario(boolean possuiComentario) { this.possuiComentario = possuiComentario; }
 }

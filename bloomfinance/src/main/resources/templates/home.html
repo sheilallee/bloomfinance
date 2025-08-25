@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="fragments/head :: head"></head>
+
+<body>
+    <div th:replace="fragments/cabecalho :: cabecalho"></div>
+
+    <div class="container conteudo">
+        <div class="card shadow">
+            <div class="card-header bg-light text-dark">
+                <h4 th:text="${titulo}">Home</h4>
+            </div>
+            <div class="card-body">
+               <!-- Administrador -->
+                <div sec:authorize="hasRole('ADMIN')">
+                    <p><strong>Como administrador, você poderá:</strong></p>
+                    <ul>
+                        <li>Adicionar ou consultar correntistas cadastrados usando o menu <strong>Correntistas</strong></li>
+                        <li>Adicionar ou consultar categorias no menu <strong>Categorias</strong></li>
+                        <li>Adicionar ou consultar contas no menu <strong>Contas</strong></li>
+                        <li>Realizar <strong>transações</strong></li>
+                    </ul>
+                </div>
+
+                <!-- Correntista -->
+                <div sec:authorize="hasRole('USER') and !hasRole('ADMIN')">
+                    <p><strong>Como correntista, você poderá:</strong></p>
+                    <ul>
+                        <li>Adicionar ou consultar suas <strong>contas</strong></li>
+                        <li>Realizar <strong>transações</strong></li>
+                        <li>Visualizar <strong>extratos</strong> da conta</li>
+                        <li>Acompanhar seu <strong>orçamento anual</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -2,21 +2,21 @@ package br.edu.ifpb.pweb2.bloomfinance.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
+@RequestMapping("/auth")
 public class AuthController {
 
-    @GetMapping("/auth/login")
+    @GetMapping("/login")
     public ModelAndView login(ModelAndView mv) {
         mv.setViewName("auth/login");
         return mv;
     }
+
+    @GetMapping("/acesso-negado")
+    public String acessoNegado() {
+        return "auth/acesso-negado"; 
+    }
 }
-
-
-
-
-
-
-

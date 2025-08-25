@@ -67,20 +67,24 @@
             <td th:text="${#numbers.formatDecimal(saldoInicial, 1, 'COMMA', 2, 'POINT')}"></td>
         </tr>
 
-        <tr th:each="linha : ${linhas}">
+       <tr th:each="linha : ${linhas}">
             <td th:text="${#temporals.format(linha.data, 'dd/MM/yyyy')}"></td>
             <td th:text="${linha.categoria}"></td>
             <td>
                 <span th:text="${linha.descricao}"></span>
-                <a th:href="@{/comentarios/transacao/{id}(id=${linha.idTransacao})}"
-                  class="ms-2 text-info" title="Comentários">
-                    <i class="bi bi-chat-left-text"></i>
+                
+                <!-- ícone só aparece se houver comentários -->
+                <a th:if="${linha.possuiComentario}"
+                    th:href="@{/comentarios/transacao/{id}(id=${linha.idTransacao})}"
+                    class="ms-2 text-info" title="Comentários">
+                        <i class="bi bi-chat-left-text"></i>
                 </a>
             </td>
             <td th:text="${linha.movimento.name() == 'CREDITO' ? '+' + linha.valor : '-' + linha.valor}"
                 th:classappend="${linha.movimento.name() == 'CREDITO'} ? 'text-success' : 'text-danger'"></td>
             <td th:text="${#numbers.formatDecimal(linha.saldoAcumulado, 1, 'COMMA', 2, 'POINT')}"></td>
         </tr>
+
 
         <tr>
             <td colspan="4"><strong>Saldo Final</strong></td>
