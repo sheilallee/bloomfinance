@@ -44,6 +44,10 @@ public class CorrentistaService {
         return correntistaRepository.findAll(pageable);
     }
 
+    public boolean existsByEmail(String email) {
+    return correntistaRepository.existsByEmail(email);
+    }
+
     //    CRIAÇÃO    
     @Transactional
     public Correntista criarComUserERoles(CorrentistaForm dto) {

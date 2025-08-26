@@ -67,7 +67,8 @@ public class ContaController {
             contaService.save(conta);
             return "redirect:/contas";
         } catch (IllegalArgumentException e) {
-            model.addAttribute("erro", e.getMessage());
+            result.reject("globalError", e.getMessage());
+            //model.addAttribute("erro", e.getMessage());
             return "contas/form";
         }
     }

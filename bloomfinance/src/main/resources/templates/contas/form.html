@@ -6,48 +6,60 @@
 
 <div class="container mt-5">
     <h2 th:text="${conta.id == null} ? 'Nova Conta' : 'Editar Conta'"></h2>
-    <div th:if="${erro}" class="alert alert-danger" th:text="${erro}"></div>
+
     <form th:action="@{/contas/salvar}" th:object="${conta}" method="post">
         <input type="hidden" th:field="*{id}"/>
+
+        <!-- Erros globais -->
+        <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+            <ul>
+                <li th:each="err : ${#fields.globalErrors()}" th:text="${err}"></li>
+            </ul>
+        </div>
 
         <div class="mb-3">
             <label class="form-label">Número da Conta</label>
             <input type="text" class="form-control"
                    th:field="*{numero}"
-                   pattern="^\d{4}-\d{1}$"
                    placeholder="Ex: 3212-1"
                    required>
             <div class="form-text">Formato: XXXX-X</div>
+            <!-- Mensagem de erro -->
+            <div class="text-danger" th:if="${#fields.hasErrors('numero')}" th:errors="*{numero}"></div>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Descrição</label>
             <input type="text" class="form-control" th:field="*{descricao}" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}"></div>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Tipo</label>
             <select class="form-control" th:field="*{tipo}" id="tipoConta">
+                <option value="">Selecione...</option>
                 <option th:value="CORRENTE">Conta Corrente</option>
                 <option th:value="CARTAO">Cartão de Crédito</option>
             </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('tipo')}" th:errors="*{tipo}"></div>
         </div>
 
         <div class="mb-3" id="fechamento-group">
             <label class="form-label">Dia de Fechamento</label>
             <input type="number" class="form-control" th:field="*{diaFechamento}" placeholder="Somente para cartão">
+            <div class="text-danger" th:if="${#fields.hasErrors('diaFechamento')}" th:errors="*{diaFechamento}"></div>
         </div>
-
 
         <button type="submit" class="btn btn-primary">Salvar</button>
         <a th:href="@{/contas}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
+
 <script>
     function toggleFechamento() {
         const tipoSelect = document.getElementById("tipoConta");
         const fechamentoGroup = document.getElementById("fechamento-group");
-        
+
         if (tipoSelect.value === "CARTAO") {
             fechamentoGroup.style.display = "block";
         } else {
@@ -58,7 +70,7 @@
     document.addEventListener("DOMContentLoaded", function () {
         const tipoSelect = document.getElementById("tipoConta");
         tipoSelect.addEventListener("change", toggleFechamento);
-        toggleFechamento(); 
+        toggleFechamento();
     });
 </script>
 </body>

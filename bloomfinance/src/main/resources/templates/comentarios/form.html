@@ -12,6 +12,13 @@
   <form th:action="@{/comentarios/salvar}" method="post">
     <input type="hidden" name="transacaoId" th:value="${transacao.id}" />
 
+    <!-- Mensagens de erro globais -->
+    <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+      <ul>
+        <li th:each="err : ${#fields.globalErrors()}" th:text="${err}"></li>
+      </ul>
+    </div>
+
     <div class="mb-3">
       <label for="texto" class="form-label">Comentário</label>
       <textarea class="form-control" id="texto" name="texto" rows="4"></textarea>

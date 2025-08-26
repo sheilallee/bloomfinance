@@ -14,6 +14,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -42,6 +44,8 @@ public class Conta implements Serializable {
     @Enumerated(EnumType.STRING)
     private TipoConta tipo;
 
+    @Min(value = 1, message = "O dia de fechamento deve ser entre 1 e 31.")
+    @Max(value = 31, message = "O dia de fechamento deve ser entre 1 e 31.")
     private Integer diaFechamento;
 
     @ManyToOne

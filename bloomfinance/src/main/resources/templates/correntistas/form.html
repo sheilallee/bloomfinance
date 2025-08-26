@@ -13,6 +13,13 @@
         <form th:action="@{/correntistas/salvar}" th:object="${correntista}" method="post">
           <input type="hidden" th:field="*{id}" />
 
+          <!-- Mensagens de erro globais -->
+          <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+            <ul>
+              <li th:each="err : ${#fields.globalErrors()}" th:text="${err}"></li>
+            </ul>
+          </div>
+
           <div class="mb-3">
             <label class="form-label">Nome:</label>
             <input type="text" th:field="*{nome}" class="form-control" th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid'">

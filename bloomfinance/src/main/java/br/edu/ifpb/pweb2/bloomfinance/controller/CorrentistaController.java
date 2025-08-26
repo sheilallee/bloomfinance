@@ -79,9 +79,22 @@ public class CorrentistaController {
         boolean novo = (form.getId() == null);
 
         // senha obrigatória no cadastro
-        if (novo && (form.getSenha() == null || form.getSenha().isBlank())) {
-            result.rejectValue("senha", "senha.obrigatoria", "A senha é obrigatória no cadastro.");
+        // if (novo && (form.getSenha() == null || form.getSenha().isBlank())) {
+        //     result.rejectValue("senha", "senha.obrigatoria", "A senha é obrigatória no cadastro.");
+        // }
+        if (novo) {
+            if (form.getSenha() == null || form.getSenha().isBlank()) {
+                result.rejectValue("senha", "senha.obrigatoria", "A senha é obrigatória no cadastro.");
+            } else if (!form.getSenha().matches("^(?=.*\\d).{8,}$")) {
+                // Regex: pelo menos 8 caracteres e pelo menos 1 número
+                result.rejectValue("senha", "senha.invalida", "A senha deve ter no mínimo 8 caracteres e conter pelo menos um número.");
+            }
+        } else if (form.getSenha() != null && !form.getSenha().isBlank()) {
+            if (!form.getSenha().matches("^(?=.*\\d).{8,}$")) {
+                result.rejectValue("senha", "senha.invalida", "A senha deve ter no mínimo 8 caracteres e conter pelo menos um número.");
+            }
         }
+
 
         // username único: no novo, não pode existir; na edição, não pode pertencer a outro user
         if (novo) {
@@ -95,6 +108,20 @@ public class CorrentistaController {
             if (!usernameAtual.equals(form.getUsername())
                     && userRepository.existsByUsername(form.getUsername())) {
                 result.rejectValue("username", "username.duplicado", "Este username já está em uso.");
+            }
+        }
+
+        //email único
+        if (novo) {
+            if (correntistaService.existsByEmail(form.getEmail())) {
+                result.rejectValue("email", "email.duplicado", "Este email já está em uso.");
+            }
+        } else {
+            Correntista atual = correntistaService.findById(form.getId()).orElseThrow();
+            String emailAtual = atual.getEmail();
+            if (!emailAtual.equals(form.getEmail())
+                    && correntistaService.existsByEmail(form.getEmail())) {
+                result.rejectValue("email", "email.duplicado", "Este email já está em uso.");
             }
         }
 

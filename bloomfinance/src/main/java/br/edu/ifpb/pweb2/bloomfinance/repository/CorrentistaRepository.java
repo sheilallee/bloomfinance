@@ -8,5 +8,6 @@ import br.edu.ifpb.pweb2.bloomfinance.model.Correntista;
 
 public interface CorrentistaRepository extends JpaRepository<Correntista, Long> {
     Optional<Correntista> findByEmail(String email);
+    boolean existsByEmail(String email);
     Optional<Correntista> findByUser_Username(String username);
 }

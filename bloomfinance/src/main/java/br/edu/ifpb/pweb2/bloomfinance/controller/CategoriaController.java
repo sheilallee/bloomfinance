@@ -6,10 +6,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import br.edu.ifpb.pweb2.bloomfinance.model.Categoria;
 import br.edu.ifpb.pweb2.bloomfinance.service.CategoriaService;
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/categorias")
@@ -45,8 +52,19 @@ public class CategoriaController {
         return "categorias/form";
     }
 
+    // @PostMapping("/salvar")
+    // public String salvar(@ModelAttribute Categoria categoria) {
+    //     categoriaService.save(categoria);
+    //     return "redirect:/categorias";
+    // }
     @PostMapping("/salvar")
-    public String salvar(@ModelAttribute Categoria categoria) {
+    public String salvar(@Valid @ModelAttribute("categoria") Categoria categoria,
+                        BindingResult result,
+                        Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("titulo", categoria.getId() == null ? "Nova Categoria" : "Editar Categoria");
+            return "categorias/form";
+        }
         categoriaService.save(categoria);
         return "redirect:/categorias";
     }
