@@ -40,7 +40,7 @@ public class SecurityConfig {
 
                 //apenas ADMIN pode gerenciar correntistas e categorias
                 .requestMatchers("/correntistas/**", "/categorias/**").hasRole("ADMIN")
-                .requestMatchers("/contas/form").hasRole("ADMIN")
+                .requestMatchers("/contas/**").hasAnyRole("ADMIN", "USER")
 
                 //ADMIN e USER Correntista podem acessar contas, transações, comentários, extrato e orçamento
                 .requestMatchers("/contas/**").hasAnyRole("ADMIN", "USER")
